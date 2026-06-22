@@ -4,27 +4,25 @@
     <meta charset="UTF-8">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; }
-        button { padding: 20px 40px; font-size: 20px; background: #4507cc; color: white; border: none; border-radius: 12px; }
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        .btn { padding: 15px 25px; margin: 10px; border: none; border-radius: 10px; color: white; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
-    <h1>Вітрина</h1>
-    <p id="status">Завантаження...</p>
-    <button id="mainButton">Купити товар</button>
+    <h1>Оберіть товар:</h1>
+    <button class="btn" style="background: red;" onclick="sendOrder('товар_1')">Червоний</button>
+    <button class="btn" style="background: green;" onclick="sendOrder('товар_2')">Зелений</button>
+    <button class="btn" style="background: blue;" onclick="sendOrder('товар_3')">Синій</button>
+    <button class="btn" style="background: orange;" onclick="sendOrder('товар_4')">Жовтий</button>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.ready();
-        
-        // Якщо JS працює, напис зміниться
-        document.getElementById('status').innerText = "JS працює!";
 
-        document.getElementById('mainButton').addEventListener('click', function() {
-            // Спробуємо інший спосіб відправки
-            tg.sendData(JSON.stringify({action: "buy_item"}));
-            tg.close();
-        });
+        function sendOrder(item_name) {
+            tg.sendData(JSON.stringify({item: item_name}));
+            setTimeout(() => { tg.close(); }, 300);
+        }
     </script>
 </body>
 </html>
