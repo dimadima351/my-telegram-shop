@@ -5,66 +5,48 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; padding: 10px; }
-        .product { border-bottom: 1px solid #ccc; padding: 10px; display: flex; justify-content: space-between; }
-        button { padding: 5px 10px; cursor: pointer; }
-        #cart { margin-top: 20px; border-top: 2px solid black; }
+        .item { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ccc; }
+        #cart { margin-top: 20px; font-weight: bold; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px; background: #2481cc; color: white; border: none; }
     </style>
 </head>
 <body>
-    <h1>Каталог товарів</h1>
-    <div id="catalog"></div>
-    <div id="cart">
-        <h3>Кошик</h3>
-        <div id="cart-items"></div>
-        <p>Загальна ціна: <span id="total">0</span> грн</p>
-        <input type="text" id="phone" placeholder="Ваш номер телефону">
-        <button onclick="checkout()">Оформити замовлення</button>
-    </div>
+    <h2>Товари</h2>
+    <div id="items"></div>
+    <div id="cart">Кошик: 0 грн</div>
+    <input type="tel" id="phone" placeholder="Ваш номер телефону">
+    <button onclick="checkout()">Оформити замовлення</button>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.ready();
-
-        const products = [
-            {id: 1, name: "Товар 1", price: 100}, {id: 2, name: "Товар 2", price: 200},
-            {id: 3, name: "Товар 3", price: 150}, {id: 4, name: "Товар 4", price: 300},
-            {id: 5, name: "Товар 5", price: 50},  {id: 6, name: "Товар 6", price: 400},
-            {id: 7, name: "Товар 7", price: 250}, {id: 8, name: "Товар 8", price: 120},
-            {id: 9, name: "Товар 9", price: 500}, {id: 10, name: "Товар 10", price: 90}
-        ];
-
         let cart = {};
+        const items = Array.from({length: 10}, (_, i) => ({id: i+1, name: `Товар ${i+1}`, price: (i+1)*100}));
 
-        function render() {
-            let cat = document.getElementById('catalog');
-            products.forEach(p => {
-                cat.innerHTML += `<div class="product">${p.name} - ${p.price} грн 
-                <button onclick="addToCart(${p.id})">+</button></div>`;
-            });
-        }
+        // Малюємо товари
+        items.forEach(item => {
+            document.getElementById('items').innerHTML += `
+                <div class="item">
+                    ${item.name} (${item.price} грн)
+                    <button onclick="addToCart(${item.id})">+</button>
+                </div>`;
+        });
 
         function addToCart(id) {
             cart[id] = (cart[id] || 0) + 1;
-            updateCart();
+            updateTotal();
         }
 
-        function updateCart() {
-            let items = document.getElementById('cart-items');
-            items.innerHTML = "";
-            let total = 0;
-            for(let id in cart) {
-                let p = products.find(x => x.id == id);
-                items.innerHTML += `<p>${p.name} x ${cart[id]} = ${p.price * cart[id]} грн</p>`;
-                total += p.price * cart[id];
-            }
-            document.getElementById('total').innerText = total;
+        function updateTotal() {
+            let total = items.reduce((sum, item) => sum + (cart[item.id] || 0) * item.price, 0);
+            document.getElementById('cart').innerText = `Кошик: ${total} грн`;
         }
 
         function checkout() {
             let phone = document.getElementById('phone').value;
             tg.sendData(JSON.stringify({cart: cart, phone: phone}));
+            tg.close();
         }
-        render();
     </script>
 </body>
 </html>
