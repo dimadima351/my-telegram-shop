@@ -4,25 +4,67 @@
     <meta charset="UTF-8">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; }
-        .btn { padding: 15px 25px; margin: 10px; border: none; border-radius: 10px; color: white; cursor: pointer; font-size: 16px; }
+        body { font-family: sans-serif; padding: 10px; }
+        .product { border-bottom: 1px solid #ccc; padding: 10px; display: flex; justify-content: space-between; }
+        button { padding: 5px 10px; cursor: pointer; }
+        #cart { margin-top: 20px; border-top: 2px solid black; }
     </style>
 </head>
 <body>
-    <h1>Оберіть товар:</h1>
-    <button class="btn" style="background: red;" onclick="sendOrder('товар_1')">Червоний</button>
-    <button class="btn" style="background: green;" onclick="sendOrder('товар_2')">Зелений</button>
-    <button class="btn" style="background: blue;" onclick="sendOrder('товар_3')">Синій</button>
-    <button class="btn" style="background: orange;" onclick="sendOrder('товар_4')">Жовтий</button>
+    <h1>Каталог товарів</h1>
+    <div id="catalog"></div>
+    <div id="cart">
+        <h3>Кошик</h3>
+        <div id="cart-items"></div>
+        <p>Загальна ціна: <span id="total">0</span> грн</p>
+        <input type="text" id="phone" placeholder="Ваш номер телефону">
+        <button onclick="checkout()">Оформити замовлення</button>
+    </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.ready();
 
-        function sendOrder(item_name) {
-            tg.sendData(JSON.stringify({item: item_name}));
-            setTimeout(() => { tg.close(); }, 300);
+        const products = [
+            {id: 1, name: "Товар 1", price: 100}, {id: 2, name: "Товар 2", price: 200},
+            {id: 3, name: "Товар 3", price: 150}, {id: 4, name: "Товар 4", price: 300},
+            {id: 5, name: "Товар 5", price: 50},  {id: 6, name: "Товар 6", price: 400},
+            {id: 7, name: "Товар 7", price: 250}, {id: 8, name: "Товар 8", price: 120},
+            {id: 9, name: "Товар 9", price: 500}, {id: 10, name: "Товар 10", price: 90}
+        ];
+
+        let cart = {};
+
+        function render() {
+            let cat = document.getElementById('catalog');
+            products.forEach(p => {
+                cat.innerHTML += `<div class="product">${p.name} - ${p.price} грн 
+                <button onclick="addToCart(${p.id})">+</button></div>`;
+            });
         }
+
+        function addToCart(id) {
+            cart[id] = (cart[id] || 0) + 1;
+            updateCart();
+        }
+
+        function updateCart() {
+            let items = document.getElementById('cart-items');
+            items.innerHTML = "";
+            let total = 0;
+            for(let id in cart) {
+                let p = products.find(x => x.id == id);
+                items.innerHTML += `<p>${p.name} x ${cart[id]} = ${p.price * cart[id]} грн</p>`;
+                total += p.price * cart[id];
+            }
+            document.getElementById('total').innerText = total;
+        }
+
+        function checkout() {
+            let phone = document.getElementById('phone').value;
+            tg.sendData(JSON.stringify({cart: cart, phone: phone}));
+        }
+        render();
     </script>
 </body>
 </html>
