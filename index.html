@@ -2,27 +2,28 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Мій магазин</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 50px; }
-        button { padding: 20px 40px; font-size: 20px; cursor: pointer; background: #2481cc; color: white; border: none; border-radius: 12px; }
+        button { padding: 20px 40px; font-size: 20px; background: #2481cc; color: white; border: none; border-radius: 12px; }
     </style>
 </head>
 <body>
-    <h1>Вітрина магазину</h1>
+    <h1>Вітрина</h1>
+    <p id="status">Завантаження...</p>
     <button id="mainButton">Купити товар</button>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.ready();
-        tg.expand();
+        
+        // Якщо JS працює, напис зміниться
+        document.getElementById('status').innerText = "JS працює!";
 
         document.getElementById('mainButton').addEventListener('click', function() {
-            tg.sendData("buy_button_clicked");
-            setTimeout(() => {
-                tg.close();
-            }, 500);
+            // Спробуємо інший спосіб відправки
+            tg.sendData(JSON.stringify({action: "buy_item"}));
+            tg.close();
         });
     </script>
 </body>
