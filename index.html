@@ -6,23 +6,44 @@
     <title>Мій магазин</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; }
-        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #2481cc; color: white; border: none; border-radius: 10px; }
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            padding: 50px; 
+            background-color: #f4f4f9; 
+        }
+        button { 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            cursor: pointer; 
+            background: #2481cc; 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:active { background: #1a68a5; }
     </style>
 </head>
 <body>
-    <h1>Ласкаво просимо в магазин!</h1>
+    <h1>Вітрина магазину</h1>
+    <p>Натисніть кнопку, щоб зробити замовлення</p>
     <button id="mainButton">Купити товар</button>
 
     <script>
         // Ініціалізація Telegram Web App
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Розгортаємо додаток на весь екран
+        tg.expand(); // Розгортаємо вікно на весь екран
 
         // Дія при натисканні кнопки
         document.getElementById('mainButton').addEventListener('click', function() {
-            tg.sendData("buy_button_clicked");
-            tg.close(); // Закриття вікна після натискання
+            // Відправляємо дані боту
+            tg.sendData("buy_button_clicked"); 
+            
+            // Затримка 200 мс перед закриттям, щоб дані встигли піти в Telegram
+            setTimeout(() => {
+                tg.close();
+            }, 200); 
         });
     </script>
 </body>
